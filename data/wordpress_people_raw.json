@@ -1,0 +1,409 @@
+[
+  {
+    "id": 28840,
+    "date": "2025-04-15T19:40:37",
+    "date_gmt": "2025-04-15T19:40:37",
+    "guid": {
+      "rendered": "https://engineering.vanderbilt.edu/?post_type=person&#038;p=28840"
+    },
+    "modified": "2025-04-15T19:44:11",
+    "modified_gmt": "2025-04-15T19:44:11",
+    "slug": "charity-backs",
+    "status": "publish",
+    "type": "person",
+    "link": "https://engineering.vanderbilt.edu/person/charity-backs/",
+    "title": {
+      "rendered": "Charity Backs"
+    },
+    "featured_media": 0,
+    "template": "",
+    "meta": {
+      "spay_email": ""
+    },
+    "categories": [],
+    "tags": [],
+    "acf": [],
+    "ACF": {
+      "first_name": "Charity",
+      "last_name": "Backs",
+      "suffix_credentials": "Senior Administrative Specialist, Civil &amp; Environmental Engineering",
+      "current_title": "",
+      "photo": false,
+      "vunetid": "",
+      "email": "",
+      "website_url": "",
+      "sort_order": "1",
+      "story_heading": "",
+      "story_subheading": "",
+      "degree": "",
+      "degree_year": "",
+      "degree_program": "",
+      "degree_program_url": "",
+      "fun_fact": "",
+      "current_employer": "",
+      "story_excerpt": "",
+      "story_text": "",
+      "pull_quote": ""
+    },
+    "featured_img_url": false,
+    "_links": {
+      "self": [
+        {
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/person/28840"
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/person"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/types/person"
+        }
+      ],
+      "wp:attachment": [
+        {
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/media?parent=28840"
+        }
+      ],
+      "wp:term": [
+        {
+          "taxonomy": "category",
+          "embeddable": true,
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/categories?post=28840"
+        },
+        {
+          "taxonomy": "post_tag",
+          "embeddable": true,
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/tags?post=28840"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 28838,
+    "date": "2025-04-15T19:36:00",
+    "date_gmt": "2025-04-15T19:36:00",
+    "guid": {
+      "rendered": "https://engineering.vanderbilt.edu/?post_type=person&#038;p=28838"
+    },
+    "modified": "2025-04-15T19:39:01",
+    "modified_gmt": "2025-04-15T19:39:01",
+    "slug": "hayley-britton-2",
+    "status": "publish",
+    "type": "person",
+    "link": "https://engineering.vanderbilt.edu/person/hayley-britton-2/",
+    "title": {
+      "rendered": "Hayley Britton"
+    },
+    "featured_media": 0,
+    "template": "",
+    "meta": {
+      "spay_email": ""
+    },
+    "categories": [
+      4644
+    ],
+    "tags": [],
+    "acf": [],
+    "ACF": {
+      "first_name": "Hayley",
+      "last_name": "Britton",
+      "suffix_credentials": "Digital Marketing Communications Specialist",
+      "current_title": "",
+      "photo": {
+        "ID": 28839,
+        "id": 28839,
+        "title": "hayley.fahey@vanderbilt.edu-1",
+        "filename": "hayley.fahey@vanderbilt.edu-1-scaled.jpg",
+        "filesize": 525854,
+        "url": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-scaled.jpg",
+        "link": "https://engineering.vanderbilt.edu/person/hayley-britton-2/hayley-faheyvanderbilt-edu-1/",
+        "alt": "",
+        "author": "2341",
+        "description": "",
+        "caption": "",
+        "name": "hayley-faheyvanderbilt-edu-1",
+        "status": "inherit",
+        "uploaded_to": 28838,
+        "date": "2025-04-15 19:37:34",
+        "modified": "2025-04-15 19:37:34",
+        "menu_order": 0,
+        "mime_type": "image/jpeg",
+        "type": "image",
+        "subtype": "jpeg",
+        "icon": "https://engineering.vanderbilt.edu/wp-includes/images/media/default.png",
+        "width": 1791,
+        "height": 2560,
+        "sizes": {
+          "thumbnail": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-150x150.jpg",
+          "thumbnail-width": 150,
+          "thumbnail-height": 150,
+          "medium": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-600x600.jpg",
+          "medium-width": 300,
+          "medium-height": 300,
+          "medium_large": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-768x1098.jpg",
+          "medium_large-width": 768,
+          "medium_large-height": 1098,
+          "large": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-716x1024.jpg",
+          "large-width": 716,
+          "large-height": 1024,
+          "img-800-1000": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-800x1000.jpg",
+          "img-800-1000-width": 800,
+          "img-800-1000-height": 1000,
+          "img-600-600": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-600x600.jpg",
+          "img-600-600-width": 600,
+          "img-600-600-height": 600,
+          "img-300-200": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-300x200.jpg",
+          "img-300-200-width": 300,
+          "img-300-200-height": 200,
+          "img-300-300": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-300x300.jpg",
+          "img-300-300-width": 300,
+          "img-300-300-height": 300,
+          "img-150-150": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-150x150.jpg",
+          "img-150-150-width": 150,
+          "img-150-150-height": 150,
+          "img-108-144-list": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-108x144.jpg",
+          "img-108-144-list-width": 108,
+          "img-108-144-list-height": 144,
+          "img-142-190-grid": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-142x190.jpg",
+          "img-142-190-grid-width": 142,
+          "img-142-190-grid-height": 190,
+          "basicgrid": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-300x400.jpg",
+          "basicgrid-width": 300,
+          "basicgrid-height": 400,
+          "1536x1536": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-1074x1536.jpg",
+          "1536x1536-width": 1074,
+          "1536x1536-height": 1536,
+          "2048x2048": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/15193734/hayley.fahey%40vanderbilt.edu-1-1432x2048.jpg",
+          "2048x2048-width": 1432,
+          "2048x2048-height": 2048
+        }
+      },
+      "vunetid": "",
+      "email": "",
+      "website_url": "",
+      "sort_order": "1",
+      "story_heading": "",
+      "story_subheading": "",
+      "degree": "",
+      "degree_year": "",
+      "degree_program": "",
+      "degree_program_url": "",
+      "fun_fact": "",
+      "current_employer": "",
+      "story_excerpt": "",
+      "story_text": "",
+      "pull_quote": ""
+    },
+    "featured_img_url": false,
+    "_links": {
+      "self": [
+        {
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/person/28838"
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/person"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/types/person"
+        }
+      ],
+      "wp:attachment": [
+        {
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/media?parent=28838"
+        }
+      ],
+      "wp:term": [
+        {
+          "taxonomy": "category",
+          "embeddable": true,
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/categories?post=28838"
+        },
+        {
+          "taxonomy": "post_tag",
+          "embeddable": true,
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/tags?post=28838"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 28703,
+    "date": "2025-04-08T20:37:39",
+    "date_gmt": "2025-04-08T20:37:39",
+    "guid": {
+      "rendered": "https://engineering.vanderbilt.edu/?post_type=person&#038;p=28703"
+    },
+    "modified": "2025-04-15T19:35:10",
+    "modified_gmt": "2025-04-15T19:35:10",
+    "slug": "ryan-underwood",
+    "status": "publish",
+    "type": "person",
+    "link": "https://engineering.vanderbilt.edu/person/ryan-underwood/",
+    "title": {
+      "rendered": "Ryan Underwood"
+    },
+    "featured_media": 0,
+    "template": "",
+    "meta": {
+      "spay_email": ""
+    },
+    "categories": [
+      4644
+    ],
+    "tags": [],
+    "acf": [],
+    "ACF": {
+      "first_name": "Ryan",
+      "last_name": "Underwood",
+      "suffix_credentials": "Director of Communications and Marketing",
+      "current_title": "",
+      "photo": {
+        "ID": 28706,
+        "id": 28706,
+        "title": "Ryan Underwood",
+        "filename": "r.jpeg",
+        "filesize": 11542,
+        "url": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r.jpeg",
+        "link": "https://engineering.vanderbilt.edu/person/ryan-underwood/r-2/",
+        "alt": "",
+        "author": "2341",
+        "description": "",
+        "caption": "",
+        "name": "r-2",
+        "status": "inherit",
+        "uploaded_to": 28703,
+        "date": "2025-04-08 20:43:08",
+        "modified": "2025-04-08 20:43:13",
+        "menu_order": 0,
+        "mime_type": "image/jpeg",
+        "type": "image",
+        "subtype": "jpeg",
+        "icon": "https://engineering.vanderbilt.edu/wp-includes/images/media/default.png",
+        "width": 200,
+        "height": 200,
+        "sizes": {
+          "thumbnail": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r-150x150.jpeg",
+          "thumbnail-width": 150,
+          "thumbnail-height": 150,
+          "medium": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r.jpeg",
+          "medium-width": 200,
+          "medium-height": 200,
+          "medium_large": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r.jpeg",
+          "medium_large-width": 200,
+          "medium_large-height": 200,
+          "large": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r.jpeg",
+          "large-width": 200,
+          "large-height": 200,
+          "img-800-1000": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r.jpeg",
+          "img-800-1000-width": 200,
+          "img-800-1000-height": 200,
+          "img-600-600": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r.jpeg",
+          "img-600-600-width": 200,
+          "img-600-600-height": 200,
+          "img-300-200": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r.jpeg",
+          "img-300-200-width": 200,
+          "img-300-200-height": 200,
+          "img-300-300": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r.jpeg",
+          "img-300-300-width": 200,
+          "img-300-300-height": 200,
+          "img-150-150": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r-150x150.jpeg",
+          "img-150-150-width": 150,
+          "img-150-150-height": 150,
+          "img-108-144-list": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r-108x144.jpeg",
+          "img-108-144-list-width": 108,
+          "img-108-144-list-height": 144,
+          "img-142-190-grid": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r-142x190.jpeg",
+          "img-142-190-grid-width": 142,
+          "img-142-190-grid-height": 190,
+          "basicgrid": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r.jpeg",
+          "basicgrid-width": 200,
+          "basicgrid-height": 200,
+          "1536x1536": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r.jpeg",
+          "1536x1536-width": 200,
+          "1536x1536-height": 200,
+          "2048x2048": "https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/282/2025/04/08204308/r.jpeg",
+          "2048x2048-width": 200,
+          "2048x2048-height": 200
+        }
+      },
+      "vunetid": "",
+      "email": "",
+      "website_url": "",
+      "sort_order": "1",
+      "story_heading": "",
+      "story_subheading": "",
+      "degree": "",
+      "degree_year": "",
+      "degree_program": "",
+      "degree_program_url": "",
+      "fun_fact": "",
+      "current_employer": "",
+      "story_excerpt": "",
+      "story_text": "",
+      "pull_quote": ""
+    },
+    "featured_img_url": false,
+    "_links": {
+      "self": [
+        {
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/person/28703"
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/person"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/types/person"
+        }
+      ],
+      "wp:attachment": [
+        {
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/media?parent=28703"
+        }
+      ],
+      "wp:term": [
+        {
+          "taxonomy": "category",
+          "embeddable": true,
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/categories?post=28703"
+        },
+        {
+          "taxonomy": "post_tag",
+          "embeddable": true,
+          "href": "https://engineering.vanderbilt.edu/wp-json/wp/v2/tags?post=28703"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  }
+]
