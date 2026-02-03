@@ -1,169 +1,50 @@
 {
   "metadata": {
-    "created_date": "2025-11-04",
-    "source": "Manual exploration of engineering.vanderbilt.edu",
-    "total_departments": 8,
-    "notes": "Faculty pages use JavaScript to load content dynamically. Playwright MCP will be required for actual data extraction."
+    "created_date": "2026-02-03",
+    "source": "MPART @ UIS (Medical Policy Applied Research Team at University of Illinois Springfield)",
+    "total_departments": 1,
+    "notes": "Consolidated department entry for the MPART @ UIS grant monitoring system"
   },
   "departments": [
     {
-      "id": "bme",
-      "name": "Biomedical Engineering",
-      "full_name": "Department of Biomedical Engineering",
-      "department_url": "https://engineering.vanderbilt.edu/departments/biomedical-engineering/",
-      "faculty_list_url": "https://engineering.vanderbilt.edu/people/biomedical-engineering/",
-      "page_type": "javascript-rendered",
-      "layout": "grid/list toggle",
-      "faculty_categories": [
-        "Tenure / Tenure Track",
-        "Teaching",
-        "Research",
-        "Adjunct / Adjoint",
-        "Affiliated",
-        "Emeritus"
-      ],
-      "notes": "Uses dynamic JavaScript loading. Filter by name/keyword available. Dual view modes (grid/list)."
-    },
-    {
-      "id": "chbe",
-      "name": "Chemical and Biomolecular Engineering",
-      "full_name": "Department of Chemical and Biomolecular Engineering",
-      "department_url": "https://engineering.vanderbilt.edu/departments/chemical-biomolecular-engineering/",
-      "faculty_list_url": "https://engineering.vanderbilt.edu/people/chemical-biomolecular-engineering/",
-      "page_type": "javascript-rendered",
-      "layout": "grid/list toggle",
-      "faculty_categories": [
-        "Tenure / Tenure Track",
-        "Teaching",
-        "Research",
-        "Adjunct / Adjoint",
-        "Affiliated",
-        "Emeritus"
-      ],
-      "notes": "Same structure as BME department page."
-    },
-    {
-      "id": "cee",
-      "name": "Civil and Environmental Engineering",
-      "full_name": "Department of Civil and Environmental Engineering",
-      "department_url": "https://engineering.vanderbilt.edu/departments/civil-environmental-engineering/",
-      "faculty_list_url": "https://engineering.vanderbilt.edu/people/civil-environmental-engineering/",
-      "page_type": "javascript-rendered",
-      "layout": "grid/list toggle",
-      "faculty_categories": [
-        "Tenure / Tenure Track",
-        "Teaching",
-        "Research",
-        "Adjunct / Adjoint",
-        "Affiliated",
-        "Emeritus"
-      ],
-      "notes": "Same structure as other department pages."
-    },
-    {
-      "id": "cs",
-      "name": "Computer Science",
-      "full_name": "Department of Computer Science",
-      "department_url": "https://engineering.vanderbilt.edu/departments/computer-science/",
-      "faculty_list_url": "https://engineering.vanderbilt.edu/people/computer-science/",
-      "page_type": "javascript-rendered",
-      "layout": "grid/list toggle",
-      "faculty_categories": [
-        "Tenure / Tenure Track",
-        "Teaching",
-        "Research",
-        "Adjunct / Adjoint",
-        "Affiliated",
-        "Emeritus"
-      ],
-      "notes": "Same structure as other department pages."
-    },
-    {
-      "id": "ece",
-      "name": "Electrical and Computer Engineering",
-      "full_name": "Department of Electrical and Computer Engineering",
-      "department_url": "https://engineering.vanderbilt.edu/departments/electrical-computer-engineering/",
-      "faculty_list_url": "https://engineering.vanderbilt.edu/people/electrical-computer-engineering/",
-      "page_type": "javascript-rendered",
-      "layout": "grid/list toggle",
-      "faculty_categories": [
-        "Tenure / Tenure Track",
-        "Teaching",
-        "Research",
-        "Adjunct / Adjoint",
-        "Affiliated",
-        "Emeritus"
-      ],
-      "notes": "Same structure as other department pages."
-    },
-    {
-      "id": "me",
-      "name": "Mechanical Engineering",
-      "full_name": "Department of Mechanical Engineering",
-      "department_url": "https://engineering.vanderbilt.edu/departments/mechanical-engineering/",
-      "faculty_list_url": "https://engineering.vanderbilt.edu/people/mechanical-engineering/",
-      "page_type": "javascript-rendered",
-      "layout": "grid/list toggle",
-      "faculty_categories": [
-        "Tenure / Tenure Track",
-        "Teaching",
-        "Research",
-        "Adjunct / Adjoint",
-        "Affiliated",
-        "Emeritus"
-      ],
-      "notes": "Same structure as other department pages."
-    },
-    {
-      "id": "esm",
-      "name": "Engineering Science and Management",
-      "full_name": "Division of Engineering Science and Management",
-      "department_url": "https://engineering.vanderbilt.edu/departments/engineering-science-management/",
-      "faculty_list_url": "https://engineering.vanderbilt.edu/people/engineering-science-management/",
-      "page_type": "javascript-rendered",
-      "layout": "grid/list toggle",
-      "faculty_categories": [
-        "Tenure / Tenure Track",
-        "Teaching",
-        "Research",
-        "Adjunct / Adjoint",
-        "Affiliated",
-        "Emeritus"
-      ],
-      "notes": "Division rather than department. Same page structure."
-    },
-    {
-      "id": "materials",
-      "name": "Materials Science",
-      "full_name": "Interdisciplinary Materials Science Program",
-      "department_url": "https://engineering.vanderbilt.edu/materials-science/",
+      "id": "mpart",
+      "name": "MPART @ UIS",
+      "full_name": "Medical Policy Applied Research Team at University of Illinois Springfield",
+      "short_name": "MPART",
+      "department_url": "https://www.uis.edu/mpart",
       "faculty_list_url": null,
-      "page_type": "unknown",
-      "layout": "unknown",
-      "faculty_categories": null,
-      "notes": "Interdisciplinary program. Faculty listing structure needs investigation."
+      "page_type": "static",
+      "layout": "informational",
+      "faculty_categories": [
+        "Research Team",
+        "Policy Analysts",
+        "Technical Staff"
+      ],
+      "focus_areas": [
+        "Medicaid policy innovation",
+        "Technical assistance for 1115 Waivers",
+        "LCNC implementation",
+        "AI-driven policy curation"
+      ],
+      "location": "University of Illinois Springfield",
+      "grant_monitoring_scope": [
+        "Illinois state grants",
+        "Federal Medicaid innovation grants",
+        "Healthcare transformation funding",
+        "Policy research grants"
+      ],
+      "notes": "Primary unit for grant monitoring and opportunity identification"
     }
   ],
   "common_patterns": {
-    "url_pattern": "https://engineering.vanderbilt.edu/people/{department-slug}/",
-    "page_technology": "JavaScript-rendered content",
-    "layout_options": ["grid", "list"],
-    "filter_capabilities": ["name", "keyword"],
-    "css_classes": {
-      "container": ".people-list",
-      "grid_view": ".people-list.grid-view",
-      "image_wrapper": ".people-list__image--img-wrapper",
-      "image": ".people-list__img"
-    }
+    "url_pattern": "https://www.uis.edu/mpart",
+    "page_technology": "Static HTML",
+    "layout_options": ["informational"],
+    "filter_capabilities": ["grant_type", "funding_source", "deadline"]
   },
-  "scraping_requirements": {
-    "tool_needed": "Playwright MCP (JavaScript execution required)",
-    "approach": "Navigate to each faculty_list_url, wait for JavaScript to load content, extract faculty data",
-    "challenges": [
-      "Dynamic content loading",
-      "Requires JavaScript execution",
-      "May need to handle pagination",
-      "Filter/category system needs exploration"
-    ]
+  "data_sources": {
+    "illinois_gata": "https://grants.illinois.gov/",
+    "federal_grants": "https://www.grants.gov/",
+    "medicaid_innovation": "https://www.medicaid.gov/medicaid/innovation/index.html"
   }
 }

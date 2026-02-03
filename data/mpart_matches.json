@@ -1,0 +1,248 @@
+{
+  "metadata": {
+    "generated_at": "2026-02-03T16:15:15.269688",
+    "organization": "MPART @ UIS",
+    "faculty_matched": "MPART @ UIS Research Team",
+    "total_matches": 6,
+    "deep_research_threshold": 50,
+    "deep_research_enabled": true
+  },
+  "summary": {
+    "high_priority": 4,
+    "medium_priority": 0,
+    "low_priority": 0,
+    "filtered_out": 2
+  },
+  "mercenary_lead_distribution": {
+    "mercenary_policy": 2,
+    "mercenary_data": 1,
+    "mercenary_eval": 1,
+    "none": 2
+  },
+  "matches": [
+    {
+      "grant_id": "IL-TRUTH-001",
+      "grant_title": "Multi-State Medical Policy Monitoring Infrastructure",
+      "faculty_match": "MPART @ UIS Research Team",
+      "recommended_lead": "mercenary_policy",
+      "match_score": 100,
+      "keyword_score": 100,
+      "research_depth": "deep_research",
+      "rationale": "Strong alignment due to: Medicaid policy expertise, Policy monitoring capability.",
+      "alignment_points": [
+        "Direct experience with Medicaid policy implementation",
+        "Policy monitoring and regulatory analysis capabilities"
+      ],
+      "recommended_action": "HIGH PRIORITY: Apply - Strong alignment with core competencies",
+      "deep_research_data": {
+        "analysis_performed": true,
+        "prompt_preview": "\n        Analyze this grant opportunity for MPART @ UIS:\n        \n        GRANT:\n        Title: Mult...",
+        "note": "This is a skeleton implementation. Actual AI call would go here.",
+        "recommended_lead": "mercenary_policy",
+        "mercenary_scores": {
+          "mercenary_policy": {
+            "score": 2,
+            "matched_terms": [
+              "regulatory analysis",
+              "multi-state"
+            ]
+          },
+          "mercenary_data": {
+            "score": 2,
+            "matched_terms": [
+              "policy monitoring",
+              "regulatory monitoring"
+            ]
+          },
+          "mercenary_eval": {
+            "score": 0,
+            "matched_terms": []
+          }
+        },
+        "lead_name": "Policy Mercenary (State/Regulatory Expert)",
+        "simulated_rationale": "Strong alignment due to: Medicaid policy expertise, Policy monitoring capability.",
+        "simulated_alignment": [
+          "Direct experience with Medicaid policy implementation",
+          "Policy monitoring and regulatory analysis capabilities"
+        ],
+        "simulated_recommendation": "HIGH PRIORITY: Apply - Strong alignment with core competencies"
+      },
+      "timestamp": "2026-02-03T16:15:15.268903"
+    },
+    {
+      "grant_id": "IL-POLICY-002",
+      "grant_title": "Illinois Medicaid PolicyDelta Analysis Initiative",
+      "faculty_match": "MPART @ UIS Research Team",
+      "recommended_lead": "mercenary_policy",
+      "match_score": 100,
+      "keyword_score": 100,
+      "research_depth": "deep_research",
+      "rationale": "Strong alignment due to: Medicaid policy expertise, 1115 Waiver experience.",
+      "alignment_points": [
+        "Direct experience with Medicaid policy implementation",
+        "Specialized expertise in 1115 Waiver technical assistance"
+      ],
+      "recommended_action": "HIGH PRIORITY: Apply - Strong alignment with core competencies",
+      "deep_research_data": {
+        "analysis_performed": true,
+        "prompt_preview": "\n        Analyze this grant opportunity for MPART @ UIS:\n        \n        GRANT:\n        Title: Illi...",
+        "note": "This is a skeleton implementation. Actual AI call would go here.",
+        "recommended_lead": "mercenary_policy",
+        "mercenary_scores": {
+          "mercenary_policy": {
+            "score": 5,
+            "matched_terms": [
+              "state policy",
+              "medicaid variations",
+              "1115 waiver",
+              "regulatory analysis",
+              "jurisdictional"
+            ]
+          },
+          "mercenary_data": {
+            "score": 0,
+            "matched_terms": []
+          },
+          "mercenary_eval": {
+            "score": 0,
+            "matched_terms": []
+          }
+        },
+        "lead_name": "Policy Mercenary (State/Regulatory Expert)",
+        "simulated_rationale": "Strong alignment due to: Medicaid policy expertise, 1115 Waiver experience.",
+        "simulated_alignment": [
+          "Direct experience with Medicaid policy implementation",
+          "Specialized expertise in 1115 Waiver technical assistance"
+        ],
+        "simulated_recommendation": "HIGH PRIORITY: Apply - Strong alignment with core competencies"
+      },
+      "timestamp": "2026-02-03T16:15:15.269133"
+    },
+    {
+      "grant_id": "IL-DATA-003",
+      "grant_title": "National Policy Tracker Implementation",
+      "faculty_match": "MPART @ UIS Research Team",
+      "recommended_lead": "mercenary_data",
+      "match_score": 100,
+      "keyword_score": 100,
+      "research_depth": "deep_research",
+      "rationale": "Strong alignment due to: Policy monitoring capability.",
+      "alignment_points": [
+        "Policy monitoring and regulatory analysis capabilities"
+      ],
+      "recommended_action": "HIGH PRIORITY: Apply - Strong alignment with core competencies",
+      "deep_research_data": {
+        "analysis_performed": true,
+        "prompt_preview": "\n        Analyze this grant opportunity for MPART @ UIS:\n        \n        GRANT:\n        Title: Nati...",
+        "note": "This is a skeleton implementation. Actual AI call would go here.",
+        "recommended_lead": "mercenary_data",
+        "mercenary_scores": {
+          "mercenary_policy": {
+            "score": 0,
+            "matched_terms": []
+          },
+          "mercenary_data": {
+            "score": 5,
+            "matched_terms": [
+              "policy monitoring",
+              "regulatory monitoring",
+              "ai-assisted",
+              "document collection",
+              "automated"
+            ]
+          },
+          "mercenary_eval": {
+            "score": 0,
+            "matched_terms": []
+          }
+        },
+        "lead_name": "Data Mercenary (AI/Automation Expert)",
+        "simulated_rationale": "Strong alignment due to: Policy monitoring capability.",
+        "simulated_alignment": [
+          "Policy monitoring and regulatory analysis capabilities"
+        ],
+        "simulated_recommendation": "HIGH PRIORITY: Apply - Strong alignment with core competencies"
+      },
+      "timestamp": "2026-02-03T16:15:15.269342"
+    },
+    {
+      "grant_id": "IL-EVAL-004",
+      "grant_title": "Rural Healthcare Infrastructure Government Evaluation",
+      "faculty_match": "MPART @ UIS Research Team",
+      "recommended_lead": "mercenary_eval",
+      "match_score": 91,
+      "keyword_score": 83,
+      "research_depth": "deep_research",
+      "rationale": "General alignment with MPART research areas.",
+      "alignment_points": [
+        "Rural health impact evaluation expertise"
+      ],
+      "recommended_action": "HIGH PRIORITY: Apply - Strong alignment with core competencies",
+      "deep_research_data": {
+        "analysis_performed": true,
+        "prompt_preview": "\n        Analyze this grant opportunity for MPART @ UIS:\n        \n        GRANT:\n        Title: Rura...",
+        "note": "This is a skeleton implementation. Actual AI call would go here.",
+        "recommended_lead": "mercenary_eval",
+        "mercenary_scores": {
+          "mercenary_policy": {
+            "score": 1,
+            "matched_terms": [
+              "spa"
+            ]
+          },
+          "mercenary_data": {
+            "score": 0,
+            "matched_terms": []
+          },
+          "mercenary_eval": {
+            "score": 7,
+            "matched_terms": [
+              "rural health",
+              "government evaluation",
+              "health disparities",
+              "underserved",
+              "government service",
+              "policy effectiveness",
+              "evaluation"
+            ]
+          }
+        },
+        "lead_name": "Evaluation Mercenary (Rural/Govt Services Expert)",
+        "simulated_rationale": "General alignment with MPART research areas.",
+        "simulated_alignment": [
+          "Rural health impact evaluation expertise"
+        ],
+        "simulated_recommendation": "HIGH PRIORITY: Apply - Strong alignment with core competencies"
+      },
+      "timestamp": "2026-02-03T16:15:15.269535"
+    },
+    {
+      "grant_id": "IL-REJECTED-005",
+      "grant_title": "Illinois Community Health Grant",
+      "faculty_match": "MPART @ UIS Research Team",
+      "recommended_lead": "",
+      "match_score": 0,
+      "keyword_score": 0,
+      "research_depth": "prefilter_only",
+      "rationale": "Did not pass pre-filter: Not eligible for Higher Education or Public Universities",
+      "alignment_points": [],
+      "recommended_action": "Skip - does not meet basic criteria",
+      "deep_research_data": null,
+      "timestamp": "2026-02-03T16:15:15.269548"
+    },
+    {
+      "grant_id": "FED-REJECTED-006",
+      "grant_title": "Federal Medicaid Innovation Award",
+      "faculty_match": "MPART @ UIS Research Team",
+      "recommended_lead": "",
+      "match_score": 0,
+      "keyword_score": 0,
+      "research_depth": "prefilter_only",
+      "rationale": "Did not pass pre-filter: Does not contain 'Illinois' or 'IL'",
+      "alignment_points": [],
+      "recommended_action": "Skip - does not meet basic criteria",
+      "deep_research_data": null,
+      "timestamp": "2026-02-03T16:15:15.269557"
+    }
+  ]
+}
