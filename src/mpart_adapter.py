@@ -666,13 +666,16 @@ class MPARTMatchingAdapter:
         # Match all grants
         return self.match_grants(all_grants)
     
-    def save_matches(self, matches: List[MatchResult], filepath: str) -> None:
+    def save_matches(self, matches: List[MatchResult], filepath: str,
+                    mode: str = "live", sources: Optional[List[str]] = None) -> None:
         """
-        Save match results to a JSON file.
+        Save match results to a JSON file with provenance metadata.
         
         Args:
             matches: List of MatchResult objects
             filepath: Path to save the JSON file
+            mode: 'live' or 'demo' to indicate data source
+            sources: List of source names used for discovery
         """
         # Calculate Mercenary lead distribution
         mercenary_leads = {
@@ -685,11 +688,15 @@ class MPARTMatchingAdapter:
         output = {
             'metadata': {
                 'generated_at': datetime.now().isoformat(),
+                'ingestion_timestamp': datetime.now().isoformat(),
                 'organization': 'MPART @ UIS',
                 'faculty_matched': self.profile.get('name') if self.profile else 'Unknown',
                 'total_matches': len(matches),
                 'deep_research_threshold': self.DEEP_RESEARCH_THRESHOLD,
-                'deep_research_enabled': self.enable_deep_research
+                'deep_research_enabled': self.enable_deep_research,
+                'mode': mode,
+                'sources': sources or ["demo/test data"],
+                'pipeline_version': '2.0'
             },
             'summary': {
                 'high_priority': sum(1 for m in matches if m.match_score >= 75),
@@ -704,7 +711,7 @@ class MPARTMatchingAdapter:
         with open(filepath, 'w') as f:
             json.dump(output, f, indent=2)
         
-        self.logger.info(f"Saved {len(matches)} matches to {filepath}")
+        self.logger.info(f"Saved {len(matches)} matches to {filepath} (mode: {mode})")
 
 
 def create_adapter(enable_deep_research: bool = True) -> MPARTMatchingAdapter:
@@ -904,7 +911,12 @@ if __name__ == "__main__":
         
         print(f"\nResults saved to: {args.output}")
         
-        adapter.save_matches(results, args.output)
+        adapter.save_matches(
+            results,
+            args.output,
+            mode="demo",
+            sources=["mpart_adapter --test"]
+        )
         
     elif args.match_file:
         print(f"\n[LOADING GRANTS FROM {args.match_file}]")

@@ -5,6 +5,12 @@ on:
   schedule:
     - cron: '0 11 * * *'
   
+  # Run on PRs and main branch updates
+  pull_request:
+  push:
+    branches:
+      - main
+  
   # Allow manual triggering
   workflow_dispatch:
     inputs:
@@ -17,7 +23,7 @@ on:
         required: false
         default: 'true'
       include_foundations:
-        description: 'Include foundation sources (RWJF, Commonwealth, etc.)'
+        description: 'Include foundation sources'
         required: false
         default: 'false'
 
@@ -50,54 +56,142 @@ jobs:
         run: |
           playwright install chromium
       
-      - name: Run MPART Grant Scout
+      # ===========================================
+      # STEP 1: Run Live Match Pipeline
+      # ===========================================
+      - name: Run Live Match Pipeline
+        id: live_match
         env:
           DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
         run: |
-          echo "🚀 Starting MPART Grant Scout pipeline..."
-          echo "Sources: Illinois GATA, SAM.gov"
-          CMD="python src/scout_il.py --live"
-          if [ \"${{ github.event.inputs.include_foundations }}\" = \"true\" ]; then
-            CMD=\"$CMD --include-foundations\"
+          echo "🚀 Starting Live Match Pipeline..."
+          
+          # Determine if we should include foundations
+          FOUNDATIONS_FLAG=""
+          if [ "${{ github.event.inputs.include_foundations }}" == "true" ]; then
+            FOUNDATIONS_FLAG="--foundations"
             echo "Including foundation sources"
           fi
-          $CMD
-          echo "✅ Scout completed"
-        continue-on-error: true
+          
+          # Run the live match pipeline
+          python src/run_live_match.py \
+            --output data/mpart_matches.json \
+            --validate \
+            $FOUNDATIONS_FLAG
+          
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+        continue-on-error: false
       
+      # ===========================================
+      # STEP 2: Validate Output
+      # ===========================================
+      - name: Validate mpart_matches.json
+        id: validate
+        run: |
+          echo "🔍 Validating mpart_matches.json..."
+          
+          # Check file exists
+          if [ ! -f "data/mpart_matches.json" ]; then
+            echo "❌ ERROR: mpart_matches.json not found"
+            exit 1
+          fi
+          
+          # Check file is valid JSON and not empty
+          python3 << 'PYTHON_SCRIPT'
+          import json
+          import os
+          import sys
+          
+          try:
+              with open('data/mpart_matches.json') as f:
+                  data = json.load(f)
+              
+              # Check for matches
+              matches = data.get('matches', [])
+              if not matches:
+                  print("⚠️ WARNING: No matches found in output")
+                  # Don't fail - empty matches is valid if no grants found
+              
+              # Check provenance metadata
+              metadata = data.get('metadata', {})
+              mode = metadata.get('mode', 'unknown')
+              sources = metadata.get('sources', [])
+              
+              print(f"✅ Mode: {mode}")
+              print(f"✅ Sources: {', '.join(sources) if sources else 'None'}")
+              print(f"✅ Matches: {len(matches)}")
+              
+              if mode != 'live':
+                  print(f"⚠️ WARNING: Expected mode 'live', got '{mode}'")
+              
+              # Output stats for later steps
+              output_path = os.environ.get('GITHUB_OUTPUT')
+              if output_path:
+                  with open(output_path, 'a') as f:
+                      f.write(f"match_count={len(matches)}\n")
+                      f.write(f"mode={mode}\n")
+                      f.write(f"sources={','.join(sources)}\n")
+                      f.write(f"high_priority={sum(1 for m in matches if m.get('match_score', 0) >= 80)}\n")
+              
+              print("✅ Validation passed")
+              sys.exit(0)
+              
+          except json.JSONDecodeError as e:
+              print(f"❌ ERROR: Invalid JSON: {e}")
+              sys.exit(1)
+          except Exception as e:
+              print(f"❌ ERROR: {e}")
+              sys.exit(1)
+          PYTHON_SCRIPT
+      
+      # ===========================================
+      # STEP 3: Generate Excel Export (depends on mpart_matches.json)
+      # ===========================================
       - name: Generate Excel Export
-        if: github.event.inputs.export_excel != 'false'
+        if: github.event.inputs.export_excel != 'false' && steps.live_match.outputs.exit_code == '0'
         run: |
-          echo "📊 Generating Excel export..."
-          python -c "
+          echo "📊 Generating Excel export from mpart_matches.json..."
+          
+          python3 << 'PYTHON_SCRIPT'
           import sys
           sys.path.insert(0, 'src')
-          from export.excel_exporter import export_matches_to_excel
+          
           try:
-              path = export_matches_to_excel()
-              print(f'✅ Excel exported to: {path}')
+              from export.excel_exporter import export_matches_to_excel
+              filepath = export_matches_to_excel("data/mpart_matches.json")
+              print(f"✅ Excel exported to: {filepath}")
           except Exception as e:
-              print(f'⚠️ Excel export skipped: {e}')
-          "
+              print(f"⚠️ Excel export error: {e}")
+              # Don't fail the workflow for export issues
+          PYTHON_SCRIPT
         continue-on-error: true
       
+      # ===========================================
+      # STEP 4: Generate Calendar File (depends on mpart_matches.json)
+      # ===========================================
       - name: Generate Calendar File
+        if: steps.live_match.outputs.exit_code == '0'
         run: |
-          echo "📅 Generating calendar file..."
-          python -c "
+          echo "📅 Generating calendar file from mpart_matches.json..."
+          
+          python3 << 'PYTHON_SCRIPT'
           import sys
           sys.path.insert(0, 'src')
-          from integrations.calendar import generate_deadline_calendar
+          
           try:
-              path = generate_deadline_calendar()
-              print(f'✅ Calendar exported to: {path}')
+              from integrations.calendar import generate_deadline_calendar
+              filepath = generate_deadline_calendar("data/mpart_matches.json")
+              print(f"✅ Calendar exported to: {filepath}")
           except Exception as e:
-              print(f'⚠️ Calendar export skipped: {e}')
-          "
+              print(f"⚠️ Calendar export error: {e}")
+          PYTHON_SCRIPT
         continue-on-error: true
       
+      # ===========================================
+      # STEP 5: Send Email Digest (depends on mpart_matches.json)
+      # ===========================================
       - name: Send Email Digest
-        if: github.event.inputs.run_email_digest != 'false'
+        if: github.event.inputs.run_email_digest != 'false' && steps.live_match.outputs.exit_code == '0'
         env:
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
@@ -107,8 +201,9 @@ jobs:
           TO_ADDRESSES: ${{ secrets.TO_ADDRESSES }}
           SEND_DAILY_DIGEST: 'true'
         run: |
-          echo "📧 Sending email digest..."
-          python -c "
+          echo "📧 Sending email digest from mpart_matches.json..."
+          
+          python3 << 'PYTHON_SCRIPT'
           import sys
           sys.path.insert(0, 'src')
           import json
@@ -120,6 +215,9 @@ jobs:
               
               matches = data.get('matches', [])
               stats = data.get('summary', {})
+              metadata = data.get('metadata', {})
+              
+              print(f"Loaded {len(matches)} matches (mode: {metadata.get('mode', 'unknown')})")
               
               notifier = EmailNotifier()
               success = notifier.send_digest(matches, stats)
@@ -129,43 +227,51 @@ jobs:
               else:
                   print('⚠️ Email digest failed (check SMTP configuration)')
           except Exception as e:
-              print(f'⚠️ Email digest skipped: {e}')
-          "
+              print(f'⚠️ Email digest error: {e}')
+          PYTHON_SCRIPT
         continue-on-error: true
       
+      # ===========================================
+      # STEP 6: Check for Changes and Commit
+      # ===========================================
       - name: Check for new matches
         id: check_matches
         run: |
           if [ -f "data/mpart_matches.json" ]; then
+            # Extract stats from the file
             MATCH_COUNT=$(python3 -c "import json; data=json.load(open('data/mpart_matches.json')); print(len(data.get('matches', [])))" 2>/dev/null || echo "0")
-            HIGH_PRIORITY=$(python3 -c "import json; data=json.load(open('data/mpart_matches.json')); print(len([m for m in data.get('matches', []) if m.get('match_score', 0) >= 80]))" 2>/dev/null || echo "0")
-            echo "Found $MATCH_COUNT total matches ($HIGH_PRIORITY high priority)"
+            HIGH_PRIORITY=$(python3 -c "import json; data=json.load(open('data/mpart_matches.json')); print(sum(1 for m in data.get('matches', []) if m.get('match_score', 0) >= 80))" 2>/dev/null || echo "0")
+            MODE=$(python3 -c "import json; data=json.load(open('data/mpart_matches.json')); print(data.get('metadata', {}).get('mode', 'unknown'))" 2>/dev/null || echo "unknown")
+            
+            echo "Found $MATCH_COUNT total matches ($HIGH_PRIORITY high priority, mode: $MODE)"
             echo "match_count=$MATCH_COUNT" >> $GITHUB_OUTPUT
             echo "high_priority=$HIGH_PRIORITY" >> $GITHUB_OUTPUT
+            echo "mode=$MODE" >> $GITHUB_OUTPUT
             
             # Check if file was modified
             if git diff --quiet data/mpart_matches.json 2>/dev/null; then
               echo "has_changes=false" >> $GITHUB_OUTPUT
-              echo "No new matches to commit"
+              echo "No changes to commit"
             else
               echo "has_changes=true" >> $GITHUB_OUTPUT
-              echo "New matches found - will commit changes"
+              echo "Changes detected - will commit"
             fi
           else
             echo "match_count=0" >> $GITHUB_OUTPUT
             echo "high_priority=0" >> $GITHUB_OUTPUT
+            echo "mode=error" >> $GITHUB_OUTPUT
             echo "has_changes=false" >> $GITHUB_OUTPUT
             echo "No matches file found"
           fi
       
       - name: Configure Git
-        if: steps.check_matches.outputs.has_changes == 'true'
+        if: steps.check_matches.outputs.has_changes == 'true' && github.event_name != 'pull_request'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
       
       - name: Commit and push new matches
-        if: steps.check_matches.outputs.has_changes == 'true'
+        if: steps.check_matches.outputs.has_changes == 'true' && github.event_name != 'pull_request'
         run: |
           git add data/*.json 2>/dev/null || true
           git add data/*.xlsx 2>/dev/null || true
@@ -174,15 +280,14 @@ jobs:
           TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
           MATCH_COUNT=${{ steps.check_matches.outputs.match_count }}
           HIGH_PRIORITY=${{ steps.check_matches.outputs.high_priority }}
+          MODE=${{ steps.check_matches.outputs.mode }}
           
-          git commit -m "🤖 Daily Scout v2: $MATCH_COUNT matches ($HIGH_PRIORITY high priority) on $TIMESTAMP
+          git commit -m "🤖 Daily Scout v2 [$MODE]: $MATCH_COUNT matches ($HIGH_PRIORITY high priority) on $TIMESTAMP
 
-          - Illinois GATA portal scanned
-          - SAM.gov federal opportunities queried
-          - Foundation sources checked (RWJF, Commonwealth, etc.)
-          - Excel export generated
-          - Calendar file generated
-          - Email digest sent (if configured)
+          Pipeline: Live ingestion → Matching → Output
+          - Mode: $MODE
+          - Sources: Illinois GATA, SAM.gov (and foundations if enabled)
+          - Artifacts: JSON, Excel, Calendar
           
           Workflow: ${{ github.workflow }}
           Run: ${{ github.run_number }}" || echo "No changes to commit"
@@ -190,30 +295,45 @@ jobs:
           git push
           echo "✅ Successfully committed and pushed"
       
+      # ===========================================
+      # STEP 7: Upload Artifacts
+      # ===========================================
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: scout-results-${{ github.run_number }}
           path: |
-            data/*.json
+            data/mpart_matches.json
             data/*.xlsx
             data/*.ics
           retention-days: 30
       
+      # ===========================================
+      # STEP 8: Summary
+      # ===========================================
       - name: Summary
         if: always()
         run: |
           echo "## 🎯 MPART Daily Scout v2 Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          if [ "${{ steps.check_matches.outputs.has_changes }}" == "true" ]; then
+          MODE="${{ steps.check_matches.outputs.mode }}"
+          MATCH_COUNT="${{ steps.check_matches.outputs.match_count }}"
+          HIGH_PRIORITY="${{ steps.check_matches.outputs.high_priority }}"
+          
+          if [ "${{ steps.live_match.outputs.exit_code }}" != "0" ]; then
+            echo "❌ **Pipeline failed**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The live match pipeline encountered an error." >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.check_matches.outputs.has_changes }}" == "true" ]; then
             echo "✅ **New matches found and committed!**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
             echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
-            echo "| Total Matches | ${{ steps.check_matches.outputs.match_count }} |" >> $GITHUB_STEP_SUMMARY
-            echo "| High Priority | ${{ steps.check_matches.outputs.high_priority }} |" >> $GITHUB_STEP_SUMMARY
+            echo "| Mode | $MODE |" >> $GITHUB_STEP_SUMMARY
+            echo "| Total Matches | $MATCH_COUNT |" >> $GITHUB_STEP_SUMMARY
+            echo "| High Priority | $HIGH_PRIORITY |" >> $GITHUB_STEP_SUMMARY
             echo "| Timestamp | $(date -u +"%Y-%m-%d %H:%M UTC") |" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "### 📁 Generated Files" >> $GITHUB_STEP_SUMMARY
@@ -223,7 +343,7 @@ jobs:
           else
             echo "ℹ️ **No new matches today**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "The scout ran successfully but no new high-quality matches were found." >> $GITHUB_STEP_SUMMARY
+            echo "The scout ran successfully (mode: $MODE) but no new high-quality matches were found." >> $GITHUB_STEP_SUMMARY
           fi
           
           echo "" >> $GITHUB_STEP_SUMMARY
