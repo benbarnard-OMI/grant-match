@@ -222,7 +222,7 @@ def run_demo_ingestion():
             grant.recommended_lead = lead
             print(f"{grant.id:<15} {grant.keyword_score:>6} {lead:<30} {keywords:<30}")
     
-    # Save results
+    # Save ingestion results
     output_file = "data/live_ingestion_results.json"
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     
@@ -231,7 +231,7 @@ def run_demo_ingestion():
             "ingestion_timestamp": datetime.now().isoformat(),
             "pipeline_version": "2.0-live-demo",
             "deep_research_threshold": 80,
-            "mode": "DEMO (mock data)"
+            "mode": "demo"
         },
         "summary": total_stats,
         "source_breakdown": source_stats,
@@ -244,6 +244,28 @@ def run_demo_ingestion():
     print(f"\n{'='*80}")
     print(f"Results saved to: {output_file}")
     print("="*80 + "\n")
+    
+    # Also generate mpart_matches.json in demo mode
+    print("Generating mpart_matches.json (demo mode)...")
+    sys.path.insert(0, os.path.dirname(__file__))
+    from mpart_adapter import create_adapter
+    
+    adapter = create_adapter(enable_deep_research=False)
+    adapter.initialize()
+    
+    # Match the grants
+    matches = adapter.match_grants([g for g in all_grants if g.passes_prefilter])
+    
+    adapter.save_matches(
+        matches,
+        "data/mpart_matches.json",
+        mode="demo",
+        sources=["Mock GATA Scraper", "Mock SAM Source"]
+    )
+    
+    print(f"✅ mpart_matches.json saved (demo mode)")
+    print(f"   File: data/mpart_matches.json")
+    print(f"   Matches: {len(matches)}")
     
     # Summary
     print("\n📊 INGESTION COMPLETE")
