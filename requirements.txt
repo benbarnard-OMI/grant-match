@@ -1,0 +1,36 @@
+# MPART @ UIS Grant Match System
+# Core Dependencies
+
+# Data Processing
+pandas>=2.0.0
+openpyxl>=3.1.0
+python-dateutil>=2.8.0
+
+# Web Scraping
+playwright>=1.40.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+requests>=2.31.0
+
+# Web Dashboard
+streamlit>=1.28.0
+plotly>=5.18.0
+
+# API (Optional)
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.5.0
+
+# Email Notifications
+sendgrid>=6.10.0
+
+# Calendar Integration
+icalendar>=5.0.0
+
+# Environment Management
+python-dotenv>=1.0.0
+
+# Development
+pytest>=7.4.0
+black>=23.0.0
+flake8>=6.0.0
