@@ -193,9 +193,60 @@ Research institutions face several challenges in grant matching:
    - Run test matching
    - Validate rationale quality
 
+## Status Dashboard
+
+### 🔴 Live Grant Matches
+
+The MPART @ UIS grant scout runs **daily at 6:00 AM CST** (11:00 UTC) via GitHub Actions.
+
+**Latest Results:** [📊 View mpart_matches.json](./data/mpart_matches.json)
+
+| Metric | Value |
+|--------|-------|
+| Last Updated | Auto-updated daily |
+| Sources | Illinois GATA Portal + SAM.gov |
+| Filter | Illinois Higher Education eligible only |
+| DeepResearch Trigger | Score > 80 |
+
+### 🚀 For Student Workers
+
+**View the latest matches locally:**
+
+```bash
+# Clone or pull the latest
+git pull origin main
+
+# Run the student briefing script
+python3 src/student_briefing.py
+```
+
+This will display:
+- Top grant opportunities for MPART
+- Recommended Mercenary leads
+- Priority scores and deadlines
+
+### 🤖 Automation Status
+
+[![Daily MPART Scout](https://github.com/your-org/grant-match/actions/workflows/daily_mpart_scout.yml/badge.svg)](https://github.com/your-org/grant-match/actions/workflows/daily_mpart_scout.yml)
+
+- **Schedule:** Daily at 6:00 AM CST
+- **Manual Trigger:** [Run workflow manually](https://github.com/your-org/grant-match/actions/workflows/daily_mpart_scout.yml)
+- **Data Sources:**
+  - Illinois GATA Portal (Live web scraping)
+  - SAM.gov Federal API
+
+### 📁 Key Files
+
+| File | Description |
+|------|-------------|
+| `data/mpart_matches.json` | Latest grant matches with Mercenary assignments |
+| `data/live_ingestion_results.json` | Full pipeline results from last run |
+| `data/gata_live_capture.json` | Raw scraped data from Illinois GATA |
+| `src/student_briefing.py` | Student-friendly match viewer |
+
 ## Project Status
 
-**Current Phase:** Initial planning and proof-of-concept development
+**Current Phase:** Live automated ingestion with MPART @ UIS
 
 See [brainstorming-notes.md](brainstorming-notes.md) for detailed project planning and [grant-match-demo.md](grant-match-demo.md) for demo preparation notes.
 

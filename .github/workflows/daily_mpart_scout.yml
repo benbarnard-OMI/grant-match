@@ -1,0 +1,124 @@
+name: Daily MPART Grant Scout
+
+on:
+  # Run daily at 11:00 UTC (6:00 AM CST)
+  schedule:
+    - cron: '0 11 * * *'
+  
+  # Allow manual triggering
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  scout-grants:
+    name: Scout for MPART Grant Opportunities
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install playwright requests beautifulsoup4 lxml
+      
+      - name: Install Playwright browsers
+        run: |
+          playwright install chromium
+      
+      - name: Run MPART Grant Scout
+        env:
+          DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
+        run: |
+          echo "Starting MPART Grant Scout pipeline..."
+          python src/scout_il.py --live
+        continue-on-error: true
+      
+      - name: Check for new matches
+        id: check_matches
+        run: |
+          if [ -f "data/mpart_matches.json" ]; then
+            MATCH_COUNT=$(python3 -c "import json; data=json.load(open('data/mpart_matches.json')); print(len(data.get('matches', [])))" 2>/dev/null || echo "0")
+            echo "Found $MATCH_COUNT matches"
+            echo "match_count=$MATCH_COUNT" >> $GITHUB_OUTPUT
+            
+            # Check if file was modified
+            if git diff --quiet data/mpart_matches.json 2>/dev/null; then
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+              echo "No new matches to commit"
+            else
+              echo "has_changes=true" >> $GITHUB_OUTPUT
+              echo "New matches found - will commit changes"
+            fi
+          else
+            echo "match_count=0" >> $GITHUB_OUTPUT
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No matches file found"
+          fi
+      
+      - name: Configure Git
+        if: steps.check_matches.outputs.has_changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+      
+      - name: Commit and push new matches
+        if: steps.check_matches.outputs.has_changes == 'true'
+        run: |
+          git add data/mpart_matches.json
+          git add data/live_ingestion_results.json 2>/dev/null || true
+          git add data/gata_live_capture.json 2>/dev/null || true
+          
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+          MATCH_COUNT=${{ steps.check_matches.outputs.match_count }}
+          
+          git commit -m "🤖 Daily Scout: Found $MATCH_COUNT MPART matches on $TIMESTAMP
+
+          - Automated grant discovery from Illinois GATA and SAM.gov
+          - Pre-filtered for Illinois Higher Education eligibility
+          - High-score matches (>80) flagged for DeepResearch
+          
+          Workflow: ${{ github.workflow }}
+          Run: ${{ github.run_number }}"
+          
+          git push
+          echo "✅ Successfully committed and pushed new matches"
+      
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scout-results-${{ github.run_number }}
+          path: |
+            data/*.json
+            logs/*.log
+          retention-days: 30
+      
+      - name: Summary
+        if: always()
+        run: |
+          echo "## 🎯 MPART Daily Scout Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.check_matches.outputs.has_changes }}" == "true" ]; then
+            echo "✅ **New matches found and committed!**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- Matches: ${{ steps.check_matches.outputs.match_count }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Timestamp: $(date -u +"%Y-%m-%d %H:%M UTC")" >> $GITHUB_STEP_SUMMARY
+            echo "- [View mpart_matches.json](./data/mpart_matches.json)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ **No new matches today**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The scout ran successfully but no new high-quality matches were found." >> $GITHUB_STEP_SUMMARY
+          fi
