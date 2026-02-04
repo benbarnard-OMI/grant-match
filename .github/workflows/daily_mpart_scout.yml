@@ -265,13 +265,13 @@ jobs:
           fi
       
       - name: Configure Git
-        if: steps.check_matches.outputs.has_changes == 'true'
+        if: steps.check_matches.outputs.has_changes == 'true' && github.event_name != 'pull_request'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
       
       - name: Commit and push new matches
-        if: steps.check_matches.outputs.has_changes == 'true'
+        if: steps.check_matches.outputs.has_changes == 'true' && github.event_name != 'pull_request'
         run: |
           git add data/*.json 2>/dev/null || true
           git add data/*.xlsx 2>/dev/null || true
