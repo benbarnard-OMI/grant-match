@@ -5,6 +5,12 @@ on:
   schedule:
     - cron: '0 11 * * *'
   
+  # Run on PRs and main branch updates
+  pull_request:
+  push:
+    branches:
+      - main
+  
   # Allow manual triggering
   workflow_dispatch:
     inputs:
