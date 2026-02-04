@@ -6,40 +6,40 @@
 
 ## Project Overview
 
-**Grant Match** is an AI-powered grant matching system that automatically connects Vanderbilt University faculty researchers with relevant funding opportunities through contextualized, personalized recommendations.
+**Grant Match** is an AI-powered grant matching and discovery system. While originally designed to match Vanderbilt University faculty with funding opportunities, the project has evolved to focus on automated grant scouting for **MPART @ UIS** (Medical Policy Applied Research Team at University of Illinois Springfield).
+
+### Current Focus: MPART @ UIS Grant Scout
+
+The system now operates as a daily automated pipeline that:
+1. Scrapes the Illinois GATA (Grant Accountability and Transparency Act) portal
+2. Queries the SAM.gov federal opportunities API
+3. Scores opportunities against MPART research pillars
+4. Assigns recommended leads ("Mercenary" profiles)
+5. Triggers DeepResearch for high-scoring matches (>80)
 
 ### Core Value Proposition
 
-The system doesn't just find matches—it explains **WHY** each match makes sense with specific references to publications, prior work, and RFP requirements.
-
-### Key Innovation
-
-- Processes ALL 1000+ faculty per RFP (no pre-filtering)
-- Generates specific rationales citing actual publications and RFP sections
-- Cost-effective: ~$40-60 per RFP to analyze entire faculty population
-- Feedback-driven continuous improvement
+The system doesn't just find matches—it explains **WHY** each match makes sense with specific references to MPART's research focus areas:
+- PolicyDelta - State policy variation analysis
+- National Policy Tracker implementation
+- Regulatory Monitoring systems
+- Healthcare Infrastructure evaluation
+- 1115 Waiver technical assistance
 
 ---
 
 ## Project Status
 
-**Current Phase:** Data collection infrastructure complete, ready for profile generation
+**Current Phase:** Live automated ingestion with MPART @ UIS
 
-**Progress:** ~30% complete (5 of 16 GitHub issues)
-
-**Completed:**
-- ✓ MCP server setup (Playwright)
-- ✓ Department structure mapping (8 departments)
-- ✓ FIS faculty data extraction (110 faculty)
-- ✓ Web scraping infrastructure (Issues #4-5 scripts ready)
-
-**Pending:**
-- ⏳ Execute web scraping scripts (requires Playwright MCP activation)
-- ⏳ Publication data collection (ORCID, Semantic Scholar APIs)
-- ⏳ Profile schema definition
-- ⏳ AI profile generation
-- ⏳ Matching engine implementation
-- ⏳ Demo interface
+**Active Components:**
+- ✅ Daily automated grant scouting (GitHub Actions)
+- ✅ Illinois GATA portal web scraping
+- ✅ SAM.gov API integration
+- ✅ Heuristic keyword scoring
+- ✅ Mercenary lead assignment system
+- ✅ Student briefing interface
+- ⏳ DeepResearch AI integration (skeleton implemented)
 
 ---
 
@@ -49,36 +49,28 @@ The system doesn't just find matches—it explains **WHY** each match makes sens
 
 | Category | Technology | Purpose |
 |----------|------------|---------|
-| Language | Python 3.x | Primary development language |
-| Web Automation | Playwright MCP | JavaScript-rendered page scraping |
-| AI/LLM | Anthropic Claude | Profile generation and matching |
+| Language | Python 3.11+ | Primary development language |
+| Web Automation | Playwright | JavaScript-rendered page scraping |
+| HTTP Requests | requests | API calls (SAM.gov) |
+| Scheduling | GitHub Actions | Daily automation (cron) |
 | Data Storage | JSON files | Structured data storage |
-| APIs | ORCID, Semantic Scholar, arXiv | Publication data collection |
 
-### Python Dependencies (Issue #2)
+### Python Dependencies
 
 ```
-anthropic              # Claude API client
-requests               # HTTP requests
-python-dotenv          # Environment variables
-pandas                 # Excel/data manipulation
-openpyxl              # Excel file handling
-beautifulsoup4         # HTML parsing
-lxml                  # XML/HTML parser
-trafilatura           # Content extraction
-streamlit (optional)   # Web demo interface
+playwright              # Web browser automation
+requests                # HTTP requests for APIs
+beautifulsoup4          # HTML parsing
+lxml                    # XML/HTML parser
+trafilatura             # Content extraction
 ```
 
-### MCP Server Configuration
+### Environment Variables
 
-Playwright MCP is configured for automated web navigation:
-
+Required for live API access:
 ```bash
-# Installation command used
-claude mcp add npx @playwright/mcp@latest
+DATA_GOV_API_KEY        # For SAM.gov API access
 ```
-
-**Status:** Installed but requires fresh Claude Code session to activate.
 
 ---
 
@@ -86,167 +78,118 @@ claude mcp add npx @playwright/mcp@latest
 
 ```
 grant-match/
-├── data/                           # JSON data files
-│   ├── department_inventory.json   # 8 departments mapped (Issue #3)
-│   ├── faculty_from_fis.json       # 110 faculty from FIS (Issue #16)
-│   ├── faculty_roster.json         # Enriched roster (Issue #4 - pending)
-│   └── faculty_enriched.json       # With research data (Issue #5 - pending)
+├── src/                           # Source code
+│   ├── scout_il.py               # Main grant discovery pipeline
+│   ├── mpart_adapter.py          # MPART-specific matching logic
+│   ├── run_live_demo.py          # Demo mode with mock data
+│   ├── student_briefing.py       # Student-friendly match viewer
+│   └── data_collection/          # Legacy Vanderbilt faculty scrapers
+│       ├── README.md
+│       ├── scrape_faculty_listings.py
+│       └── scrape_faculty_websites.py
 │
-├── docs/                           # Documentation
-│   ├── MCP_SETUP.md               # Playwright MCP configuration
-│   ├── fis_data_analysis.md       # FIS data analysis report
-│   └── web_scraping_findings.md   # Scraping investigation results
+├── data/                          # JSON data files
+│   ├── department_inventory.json # Department metadata
+│   ├── faculty_from_fis.json     # MPART team + Mercenary profiles
+│   ├── mpart_matches.json        # Latest grant match results
+│   ├── live_ingestion_results.json # Pipeline execution results
+│   └── gata_live_capture.json    # Raw scraped GATA data
 │
-├── src/                            # Source code
-│   └── data_collection/
-│       ├── README.md              # Usage documentation
-│       ├── scrape_faculty_listings.py      # Issue #4 script
-│       └── scrape_faculty_websites.py      # Issue #5 script
+├── .github/workflows/             # CI/CD automation
+│   └── daily_mpart_scout.yml     # Daily 6 AM CST execution
 │
-├── FIS_All_Tenured_TT.xlsx        # Source Excel file (110 faculty)
-├── scopus-vanderbilt.txt          # Scopus query template
+├── docs/                          # Documentation
+│   ├── MCP_SETUP.md
+│   ├── fis_data_analysis.md
+│   └── web_scraping_findings.md
+│
+├── FIS_All_Tenured_TT.xlsx       # Source Excel file (legacy)
 ├── README.md                      # Project overview
-├── PROGRESS_SUMMARY.md            # Detailed progress tracking
-├── DEMO_PLAN.md                   # Demo implementation plan
-├── ISSUES_SUMMARY.md              # All 16 GitHub issues
-├── brainstorming-notes.md         # Original planning notes
-└── .gitignore                     # Git ignore rules
+└── AGENTS.md                      # This file
 ```
 
 ---
 
-## Data Architecture
+## Architecture
 
-### Faculty Data Pipeline
+### Grant Discovery Pipeline (`scout_il.py`)
 
 ```
-FIS Data (Issue #16)
-    ↓ data/faculty_from_fis.json
-    • 110 faculty (80 Engineering + 30 CS)
-    • 100% email coverage
-    • Basic appointment info
-    • NO websites, ORCID, or research info
-    
-    ↓
-    
-Faculty Listings Scraper (Issue #4)
-    ↓ data/faculty_roster.json
-    • Enriched with website URLs
-    • Profile page links
-    • Contact details verified
-    
-    ↓
-    
-Faculty Website Scraper (Issue #5)
-    ↓ data/faculty_enriched.json
-    • Research descriptions
-    • Keywords and interests
-    • Lab names and websites
-    • CV/resume links
-    
-    ↓
-    
-Publication APIs (Issues #6-7)
-    ↓ data/publications/{faculty_id}.json
-    • ORCID publications
-    • Semantic Scholar data
-    • arXiv/bioRxiv preprints
-    
-    ↓
-    
-Profile Generation (Issues #8-10)
-    ↓ data/profiles/{faculty_id}.json
-    • AI-generated research summaries
-    • Structured profile schema
+┌─────────────────┐     ┌─────────────────┐
+│  GATAWebScraper │     │   SAMSource     │
+│  (Playwright)   │     │  (SAM.gov API)  │
+└────────┬────────┘     └────────┬────────┘
+         │                       │
+         └───────────┬───────────┘
+                     ▼
+         ┌─────────────────────┐
+         │ GrantDiscoveryPipeline
+         │                     │
+         │  1. Pre-filter      │
+         │  2. Score (0-100)   │
+         │  3. Trigger AI >80  │
+         └──────────┬──────────┘
+                    ▼
+         ┌─────────────────────┐
+         │  mpart_matches.json │
+         └─────────────────────┘
 ```
 
-### Data File Schemas
+### MPART Matching Adapter (`mpart_adapter.py`)
 
-#### faculty_from_fis.json
+The adapter implements a tiered matching workflow:
 
-```json
-{
-  "metadata": {
-    "source_file": "FIS_All_Tenured_TT.xlsx",
-    "extraction_date": "2025-11-04T...",
-    "total_faculty": 110,
-    "schools": ["School of Engineering", "College of Connected Computing"]
-  },
-  "faculty": [
-    {
-      "id": "faculty_020016",
-      "person_id": 20016,
-      "name": "Abkowitz, Mark",
-      "first_name": "Mark",
-      "last_name": "Abkowitz",
-      "title": "Distinguished Professor of Civil & Environmental Engineering",
-      "rank": "Distinguished Professor",
-      "department": "Civil & Environmental Engineering",
-      "department_code": "cee",
-      "school": "School of Engineering",
-      "email": "mark.abkowitz@vanderbilt.edu",
-      "gender": "Male",
-      "tenure_status": "Tenured",
-      "is_active": true,
-      "hire_date": "9/1/1987",
-      "source_url": null,
-      "website": null,
-      "data_source": "FIS_All_Tenured_TT.xlsx"
-    }
-  ]
-}
-```
+1. **Pre-filtering** - Deterministic checks (deadline, eligibility)
+2. **Heuristic Scoring** - Keyword-based matching (0-100 score)
+3. **Deep Research** - AI analysis for high-scoring grants (>50)
+4. **Mercenary Tagging** - Assign to specialized lead profiles
 
-#### department_inventory.json
+### Mercenary Lead System
 
-Contains 8 departments with URLs and metadata:
-- `bme` - Biomedical Engineering (21 faculty)
-- `chbe` - Chemical and Biomolecular Engineering (11 faculty)
-- `cee` - Civil and Environmental Engineering (15 faculty)
-- `cs` - Computer Science (30 faculty)
-- `ece` - Electrical and Computer Engineering (17 faculty)
-- `me` - Mechanical Engineering (16 faculty)
-- `esm` - Engineering Science and Management
-- `materials` - Materials Science Program
+Three specialized "Mercenary" profiles for lead assignment:
+
+| Mercenary | Specialty | Keywords |
+|-----------|-----------|----------|
+| `mercenary_policy` | State Policy Expert | state policy, medicaid variations, 1115 waiver, regulatory analysis |
+| `mercenary_data` | Data/AI Expert | policy monitoring, automated, ai-assisted, nlp, data pipeline |
+| `mercenary_eval` | Rural/Eval Expert | rural health, infrastructure, government evaluation, health disparities |
 
 ---
 
 ## Build and Run Commands
 
-### Environment Setup (Issue #2)
+### Local Development
 
 ```bash
-# Install Python dependencies
-pip install anthropic requests python-dotenv pandas openpyxl beautifulsoup4 lxml trafilatura
+# Install dependencies
+pip install playwright requests beautifulsoup4 lxml
+playwright install chromium
 
-# Verify Playwright MCP installation
-claude mcp list
+# Set API key (optional for demo mode)
+export DATA_GOV_API_KEY="your_key_here"
 ```
 
-### Running Data Collection Scripts
-
-**Issue #4 - Faculty Listings Scraper:**
+### Running the Pipeline
 
 ```bash
-# Requires Playwright MCP active session
-python3 src/data_collection/scrape_faculty_listings.py
+# Run live ingestion (requires API key for SAM.gov)
+python src/scout_il.py --live
+
+# Run demo mode with mock data
+python src/run_live_demo.py
+
+# Test MPART adapter with sample grants
+python src/mpart_adapter.py --test
+
+# View student briefing
+python src/student_briefing.py
 ```
 
-**Issue #5 - Faculty Website Scraper:**
+### Manual Trigger via GitHub Actions
 
-```bash
-# Run after Issue #4 completes
-python3 src/data_collection/scrape_faculty_websites.py
-```
-
-### Expected Outputs
-
-| Script | Output File | Expected Content |
-|--------|-------------|------------------|
-| Issue #4 | `data/faculty_roster.json` | 110 faculty with website URLs |
-| Issue #4 | `data/faculty_scraping_report.txt` | Statistics and coverage |
-| Issue #5 | `data/faculty_enriched.json` | Profiles with research data |
-| Issue #5 | `data/website_scraping_report.txt` | Extraction success metrics |
+The workflow can be triggered manually from the GitHub Actions tab:
+- Workflow: `Daily MPART Grant Scout`
+- File: `.github/workflows/daily_mpart_scout.yml`
 
 ---
 
@@ -255,38 +198,53 @@ python3 src/data_collection/scrape_faculty_websites.py
 ### Python Style
 
 - Use type hints for function signatures
-- Follow PEP 8 naming conventions
-- Use docstrings for all functions
-- Include module-level docstrings explaining purpose
+- Follow PEP 8 naming conventions (snake_case)
+- Use docstrings for all classes and functions
+- Import ordering: stdlib, third-party, local
 
 Example:
 ```python
-def load_department_inventory() -> Dict:
-    """Load the department inventory created in Issue #3."""
-    with open('data/department_inventory.json', 'r') as f:
-        return json.load(f)
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import List, Optional, Dict, Any, Tuple
+from enum import Enum
+
+
+@dataclass
+class GrantOpportunity:
+    """Data class representing a grant opportunity."""
+    id: str
+    title: str
+    agency: str
+    description: str
+    eligibility: str
+    award_amount: Optional[str] = None
+    deadline: Optional[datetime] = None
 ```
 
-### File Organization
+### Class Organization
 
-- Scripts should be self-contained with clear entry points
-- Use `if __name__ == '__main__':` for executable scripts
-- Separate data loading, processing, and output generation
-- Include progress logging for long-running operations
+1. Enums for status/funding source types
+2. Data classes using `@dataclass`
+3. Abstract base classes for extensibility
+4. Concrete implementations
 
 ### Error Handling
 
-- Gracefully handle missing files (provide fallbacks)
-- Log errors with context (faculty name, URL)
-- Continue processing on individual failures
-- Save partial results for resume capability
+- Use logging with appropriate levels
+- Graceful degradation when APIs fail
+- Continue processing on individual grant failures
 
-### Rate Limiting
-
-Always implement rate limiting for web requests:
+Example:
 ```python
-time.sleep(2)  # Between department pages (Issue #4)
-time.sleep(3)  # Between faculty websites (Issue #5)
+logger = logging.getLogger(__name__)
+
+try:
+    response = requests.get(url, timeout=30)
+    response.raise_for_status()
+except requests.RequestException as e:
+    logger.error(f"API request failed: {e}")
+    return []
 ```
 
 ---
@@ -295,163 +253,191 @@ time.sleep(3)  # Between faculty websites (Issue #5)
 
 ### Manual Testing
 
-- Verify JSON output structure matches expected schema
-- Check data coverage statistics
-- Review sample profiles for quality
-- Validate API responses
+The project uses manual testing through CLI interfaces:
 
-### Quality Metrics
+```bash
+# Test with sample data
+python src/mpart_adapter.py --test
 
-**Data Collection:**
-- Website URL coverage: Target 95%+
-- Research description coverage: Target 80%+
-- Email coverage: 100% (already achieved)
+# Verify output files
+python -m json.tool data/mpart_matches.json | less
+```
 
-**Profile Generation:**
-- Average quality score: ≥4.0/5
-- ≥80% rated Good or Excellent
-- 0 hallucinated content
-- Specific citations to real publications
+### Test Data
+
+Mock grant opportunities are embedded in `mpart_adapter.py` for testing:
+- `IL-TRUTH-001` through `IL-REJECTED-005` - Illinois GATA scenarios
+- `FED-REJECTED-006` - Federal scenario
+
+### Quality Verification
+
+Check these metrics in output files:
+- Pre-filter pass rate (target: 30-50%)
+- High-score matches >80 (target: 5-10%)
+- Mercenary lead distribution (varies by grant mix)
 
 ---
 
 ## Security Considerations
 
-### API Keys and Credentials
+### API Keys
 
-- Store in `.env` file (never commit to git)
-- Use `python-dotenv` for loading
-- Required variables:
-  ```
-  ANTHROPIC_API_KEY=sk-...
-  SCOPUS_API_KEY=...
-  ORCID_CLIENT_ID=...
-  ORCID_CLIENT_SECRET=...
-  ```
-
-### Data Privacy
-
-- FIS data contains PII (names, emails) - handle appropriately
-- Publication data is public but cache responsibly
-- Faculty profiles for internal use only
+- Store in environment variables only
+- Never commit to git (see `.gitignore`)
+- Use GitHub Secrets for Actions workflows
 
 ### Web Scraping Ethics
 
-- Respect `robots.txt`
-- Implement appropriate rate limiting
+- Respect rate limits (2-3 seconds between requests)
 - Use identifiable User-Agent strings
 - Scrape during off-peak hours when possible
+
+### Data Privacy
+
+- Faculty profiles contain work information only
+- Grant data is public information
+- Output files are committed to repo (no PII)
+
+---
+
+## Key Data Files
+
+### `data/faculty_from_fis.json`
+
+Contains MPART team profile and Mercenary roster:
+```json
+{
+  "faculty": [
+    {
+      "id": "mpart_uis_team_001",
+      "name": "MPART @ UIS Research Team",
+      "research_interests": ["Medicaid policy", "PolicyDelta", ...],
+      "research_areas": ["health_policy", "policy_delta", ...]
+    },
+    {
+      "id": "mercenary_policy",
+      "name": "Policy Mercenary",
+      "specialization_tags": ["policy", "regulatory", "waivers"]
+    }
+  ]
+}
+```
+
+### `data/mpart_matches.json`
+
+Output format for grant matches:
+```json
+{
+  "metadata": {
+    "generated_at": "2026-02-03T...",
+    "organization": "MPART @ UIS"
+  },
+  "matches": [
+    {
+      "grant_id": "SAM-...",
+      "grant_title": "...",
+      "recommended_lead": "mercenary_policy",
+      "match_score": 85,
+      "keyword_score": 80,
+      "research_depth": "deep_research",
+      "rationale": "..."
+    }
+  ]
+}
+```
 
 ---
 
 ## Common Tasks
 
-### Adding a New Data Collection Script
+### Adding a New Grant Source
 
-1. Create script in `src/data_collection/`
-2. Follow existing pattern: load → process → save → report
-3. Add to Issue tracking documentation
-4. Update PROGRESS_SUMMARY.md
+1. Create class extending `GrantSource` in `scout_il.py`:
+```python
+class NewSource(GrantSource):
+    def __init__(self):
+        super().__init__(name="New Source", base_url="https://...")
+    
+    def discover(self, filters=None) -> List[GrantOpportunity]:
+        # Implementation
+        pass
+```
 
-### Modifying Data Schemas
+2. Register in pipeline:
+```python
+pipeline.register_source(NewSource())
+```
 
-1. Update schema documentation in relevant docs
-2. Ensure backward compatibility or migration plan
-3. Update dependent scripts
-4. Regenerate affected data files
+### Modifying Keyword Weights
 
-### Running with Playwright MCP
+Edit `HeuristicScorer.KEYWORD_WEIGHTS` in `scout_il.py`:
+```python
+KEYWORD_WEIGHTS = {
+    'medicaid': 35,
+    'new_keyword': 20,
+    ...
+}
+```
 
-1. Start fresh Claude Code session in project directory
-2. Verify MCP is active: `claude mcp list`
-3. Modify script to use natural language MCP commands
-4. Execute and monitor progress
+### Adding a Mercenary Profile
+
+1. Add entry in `MPARTProfileLoader.MERCENARY_PROFILES` (mpart_adapter.py)
+2. Add keywords in `MercenaryMatcher.MERCENARY_KEYWORDS`
+3. Update `get_mercenary_name()` method
+4. Update icon mapping in `student_briefing.py`
 
 ---
 
 ## Troubleshooting
 
-### Playwright MCP Not Working
+### Playwright Not Working
 
 ```bash
 # Verify installation
-claude mcp list
+playwright install chromium
 
-# Reinstall if needed
-claude mcp remove npx
-claude mcp add npx @playwright/mcp@latest
+# Check browser binaries
+python -c "from playwright.sync_api import sync_playwright; print('OK')"
 ```
 
-### Missing Dependencies
+### SAM.gov API Errors
 
-```bash
-# Install all required packages
-pip install beautifulsoup4 lxml trafilatura pandas openpyxl
-```
+- Verify `DATA_GOV_API_KEY` is set
+- Check API rate limits (10 requests/minute for free tier)
+- Review API documentation: https://open.gsa.gov/api/sam/opportunities/
 
-### Data File Not Found
+### Import Errors
 
-Scripts expect data files in `data/` directory relative to project root:
-- Always run scripts from project root
-- Use relative paths: `data/filename.json`
-
----
-
-## GitHub Issues Reference
-
-### Phase 1: Setup & Infrastructure
-- **#1** - Install and configure MCP server for web navigation ✓
-- **#2** - Configure development environment and API access
-
-### Phase 2: Research & Discovery
-- **#3** - Map Vanderbilt Engineering department structure ✓
-- **#16** - Extract and analyze FIS faculty data ✓
-
-### Phase 3: Data Collection
-- **#4** - Scrape faculty listings from department pages (infrastructure ✓)
-- **#5** - Extract research information from faculty websites (infrastructure ✓)
-- **#6** - Search preprint repositories for faculty publications
-- **#7** - Retrieve publication data via ORCID and scholarly APIs
-
-### Phase 4: Profile Generation
-- **#8** - Define research profile data structure and schema
-- **#9** - Design and test profile generation prompts
-- **#10** - Build automated profile generation pipeline
-
-### Phase 5: Validation & Refinement
-- **#11** - Manual review and quality assessment of generated profiles
-- **#12** - Improve profiles based on validation feedback
-
-### Phase 6: Documentation & Demo
-- **#13** - Create comprehensive profile dataset documentation
-- **#14** - Create profile showcase interface
-- **#15** - Create implementation roadmap and milestones
+No known import issues at this time. If you see module import errors, verify
+your `PYTHONPATH` includes `src/` or run scripts from the project root.
 
 ---
 
 ## Resources
 
-### External Documentation
-- [Playwright MCP Server](https://github.com/microsoft/playwright-mcp)
-- [Playwright Documentation](https://playwright.dev/)
-- [MCP Protocol](https://modelcontextprotocol.io/)
-- [Claude Code MCP Guide](https://docs.claude.com/en/docs/claude-code/mcp)
+### External APIs
 
-### Vanderbilt Resources
-- Engineering Home: https://engineering.vanderbilt.edu/
-- Engineering Faculty: https://engineering.vanderbilt.edu/people/
-- URL Pattern: `https://engineering.vanderbilt.edu/people/{dept-code}/`
+- Illinois GATA Portal: https://omb.illinois.gov/public/gata/csfa/
+- SAM.gov API: https://open.gsa.gov/api/sam/opportunities/
+- Data.gov API Key: https://api.data.gov/signup/
+
+### Documentation
+
+- `README.md` - High-level project overview
+- `DEMO_PLAN.md` - Demo preparation notes
+- `PROGRESS_SUMMARY.md` - Development progress tracking
+- `ISSUES_SUMMARY.md` - GitHub issues tracking
 
 ---
 
 ## Contact and Contribution
 
 - **Repository:** https://github.com/vanderbilt-data-science/grant-match
-- **Issues:** Track all work via GitHub issues
+- **Issues:** Track work via GitHub issues
 - **Documentation:** Maintain in `/docs` directory
 
 ---
 
-**Last Updated:** 2025-11-04  
-**Project Phase:** Data collection infrastructure complete, profile generation pending  
-**Next Milestone:** Execute web scraping (Issues #4-5) or proceed to publication APIs (Issues #6-7)
+**Last Updated:** 2026-02-04
+**Project Phase:** Live automated ingestion operational
+**Next Milestone:** Implement DeepResearch AI integration

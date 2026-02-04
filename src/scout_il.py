@@ -250,22 +250,26 @@ class GATAWebScraper(GrantSource):
         
         return mapped
     
-    def _parse_date(self, date_str: str) -> Optional[str]:
+    def _parse_date(self, date_str: str) -> Optional[datetime]:
         """Parse date from various formats."""
         if not date_str:
             return None
         
         # Common date patterns
         patterns = [
-            r'(\d{1,2}/\d{1,2}/\d{4})',  # MM/DD/YYYY
-            r'(\d{1,2}-\d{1,2}-\d{4})',  # MM-DD-YYYY
-            r'(\w+ \d{1,2},? \d{4})',    # Month DD, YYYY
+            (r'(\d{1,2}/\d{1,2}/\d{4})', "%m/%d/%Y"),
+            (r'(\d{1,2}-\d{1,2}-\d{4})', "%m-%d-%Y"),
+            (r'(\w+ \d{1,2},? \d{4})', "%B %d, %Y"),
         ]
-        
-        for pattern in patterns:
+
+        for pattern, fmt in patterns:
             match = re.search(pattern, date_str)
             if match:
-                return match.group(1)
+                try:
+                    return datetime.strptime(match.group(1).replace(",", ""), fmt)
+                except ValueError:
+                    continue
+
         return None
     
     def _convert_to_grants(self, scraped_data: Dict) -> List[GrantOpportunity]:
@@ -273,30 +277,46 @@ class GATAWebScraper(GrantSource):
         grants = []
         
         for opp in scraped_data.get("opportunities", []):
+            description = opp.get("description")
+            if not isinstance(description, str):
+                description = json.dumps(opp.get("raw_data", {}), ensure_ascii=True)
+            deadline = opp.get("deadline")
+            if isinstance(deadline, str):
+                deadline = self._parse_date(deadline)
+
             grant = GrantOpportunity(
                 id=f"GATA-OPP-{len(grants)+1:03d}",
                 title=opp.get("title", "Untitled Opportunity"),
                 agency=opp.get("agency", "Illinois GATA"),
-                description=opp.get("description", opp.get("raw_data", {})),
+                description=description or "Illinois GATA opportunity",
                 eligibility=opp.get("eligibility", "See opportunity for eligibility requirements"),
                 award_amount=opp.get("award_amount"),
+                deadline=deadline,
                 url=self.OPPORTUNITY_LIST_URL,
                 funding_source=FundingSource.ILLINOIS_GATA,
-                raw_text=f"{opp.get('title', '')} {opp.get('agency', '')} {opp.get('description', '')} Illinois".strip()
+                raw_text=f"{opp.get('title', '')} {opp.get('agency', '')} {description or ''} Illinois".strip()
             )
             grants.append(grant)
         
         for prog in scraped_data.get("programs", []):
+            description = prog.get("description")
+            if not isinstance(description, str):
+                description = json.dumps(prog.get("raw_data", {}), ensure_ascii=True)
+            deadline = prog.get("deadline")
+            if isinstance(deadline, str):
+                deadline = self._parse_date(deadline)
+
             grant = GrantOpportunity(
                 id=f"GATA-PROG-{len(grants)+1:03d}",
                 title=prog.get("title", "Untitled Program"),
                 agency=prog.get("agency", "Illinois GATA"),
-                description=prog.get("description", prog.get("raw_data", {})),
+                description=description or "Illinois GATA program",
                 eligibility=prog.get("eligibility", "See program for eligibility requirements"),
                 award_amount=prog.get("award_amount"),
+                deadline=deadline,
                 url=self.PROGRAM_LIST_URL,
                 funding_source=FundingSource.ILLINOIS_GATA,
-                raw_text=f"{prog.get('title', '')} {prog.get('agency', '')} {prog.get('description', '')} Illinois".strip()
+                raw_text=f"{prog.get('title', '')} {prog.get('agency', '')} {description or ''} Illinois".strip()
             )
             grants.append(grant)
         
@@ -477,6 +497,36 @@ class HeuristicScorer:
         
         return min(int(score), 100)
 
+    def get_match_details(self, grant: GrantOpportunity) -> Dict[str, Any]:
+        """Return matched keyword details and total score."""
+        text_to_analyze = " ".join([
+            grant.title or "",
+            grant.description or "",
+            grant.eligibility or "",
+            " ".join(grant.tags),
+            grant.raw_text or ""
+        ]).lower()
+
+        matched = {}
+        total_score = 0
+
+        for keyword, weight in self.KEYWORD_WEIGHTS.items():
+            pattern = r'\b' + re.escape(keyword.lower()) + r'\b'
+            matches = len(re.findall(pattern, text_to_analyze))
+            if matches > 0:
+                contribution = min(matches * weight, weight * 2)
+                matched[keyword] = {
+                    'count': matches,
+                    'weight': weight,
+                    'contribution': contribution
+                }
+                total_score += contribution
+
+        return {
+            'matched_keywords': matched,
+            'total_score': min(int(total_score), 100)
+        }
+
 
 class GrantDiscoveryPipeline:
     """Pipeline for discovering grants from multiple sources."""
@@ -508,7 +558,7 @@ class GrantDiscoveryPipeline:
         ]).lower()
         
         # Check 2: Must contain 'Illinois' or be federal with IL relevance
-        if "illinois" not in all_text and "il" not in all_text:
+        if not re.search(r"\billinois\b|\bil\b", all_text):
             # Federal opportunities may not mention Illinois explicitly
             if grant.funding_source != FundingSource.FEDERAL_SAM_GOV:
                 return False, "No Illinois reference"
@@ -517,8 +567,11 @@ class GrantDiscoveryPipeline:
         eligible_terms = ['higher education', 'public universit', 'college', 
                          'academic institution', 'research institution', 
                          'university', 'education', 'institution of higher']
-        
-        if not any(term in all_text for term in eligible_terms):
+
+        eligibility_text = (grant.eligibility or "").strip().lower()
+        eligibility_unknown = not eligibility_text or eligibility_text.startswith("see ")
+
+        if not eligibility_unknown and not any(term in all_text for term in eligible_terms):
             return False, "Not Higher Ed eligible"
         
         return True, "Passed all pre-filter checks"
@@ -573,7 +626,7 @@ class GrantDiscoveryPipeline:
         return results
 
 
-def run_live_ingestion():
+def run_live_ingestion(include_foundations: Optional[bool] = None):
     """
     Run complete live ingestion pipeline:
     1. Scrape Illinois GATA portal
@@ -587,11 +640,7 @@ def run_live_ingestion():
     print("="*80 + "\n")
     
     # Initialize pipeline
-    pipeline = GrantDiscoveryPipeline()
-    
-    # Register live sources
-    pipeline.register_source(GATAWebScraper())
-    pipeline.register_source(SAMSource())
+    pipeline = create_mpart_pipeline(include_foundations=include_foundations)
     
     # Run discovery with DeepResearch trigger at >80
     print("Starting live data collection...\n")
@@ -678,17 +727,47 @@ def run_live_ingestion():
     return results
 
 
+def create_mpart_pipeline(include_foundations: Optional[bool] = None) -> GrantDiscoveryPipeline:
+    """
+    Create a pre-configured MPART pipeline with standard sources.
+
+    Args:
+        include_foundations: Whether to include foundation sources. Defaults
+            to the MPART_INCLUDE_FOUNDATIONS env var (false if unset).
+    """
+    pipeline = GrantDiscoveryPipeline()
+    pipeline.register_source(GATAWebScraper())
+    pipeline.register_source(SAMSource())
+
+    if include_foundations is None:
+        include_foundations = os.getenv("MPART_INCLUDE_FOUNDATIONS", "false").lower() == "true"
+
+    if include_foundations:
+        try:
+            from sources import RWJFSource, CommonwealthFundSource, AcademyHealthSource, SHADACSource
+            pipeline.register_source(RWJFSource())
+            pipeline.register_source(CommonwealthFundSource())
+            pipeline.register_source(AcademyHealthSource())
+            pipeline.register_source(SHADACSource())
+        except Exception as e:
+            logger.warning(f"Foundation sources unavailable: {e}")
+
+    return pipeline
+
+
 if __name__ == "__main__":
     import argparse
     
     parser = argparse.ArgumentParser(description="MPART @ UIS Live Grant Ingestion")
     parser.add_argument("--live", action="store_true", help="Run live ingestion (GATA + SAM)")
+    parser.add_argument("--include-foundations", action="store_true",
+                        help="Include foundation sources (RWJF, Commonwealth, AcademyHealth, SHADAC)")
     parser.add_argument("--test-prefilter", action="store_true", help="Test pre-filter logic")
     
     args = parser.parse_args()
     
     if args.live:
-        run_live_ingestion()
+        run_live_ingestion(include_foundations=args.include_foundations)
     elif args.test_prefilter:
         # Test pre-filter with sample data
         print("Pre-filter test mode - implement test cases here")

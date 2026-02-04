@@ -1,4 +1,4 @@
-name: Daily MPART Grant Scout
+name: Daily MPART Grant Scout v2
 
 on:
   # Run daily at 11:00 UTC (6:00 AM CST)
@@ -7,6 +7,15 @@ on:
   
   # Allow manual triggering
   workflow_dispatch:
+    inputs:
+      run_email_digest:
+        description: 'Send email digest after scouting'
+        required: false
+        default: 'true'
+      export_excel:
+        description: 'Generate Excel export'
+        required: false
+        default: 'true'
 
 env:
   PYTHON_VERSION: '3.11'
@@ -31,7 +40,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install playwright requests beautifulsoup4 lxml
+          pip install playwright requests beautifulsoup4 lxml pandas openpyxl
       
       - name: Install Playwright browsers
         run: |
@@ -41,8 +50,78 @@ jobs:
         env:
           DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
         run: |
-          echo "Starting MPART Grant Scout pipeline..."
+          echo "🚀 Starting MPART Grant Scout pipeline..."
+          echo "Sources: Illinois GATA, SAM.gov, Foundations"
           python src/scout_il.py --live
+          echo "✅ Scout completed"
+        continue-on-error: true
+      
+      - name: Generate Excel Export
+        if: github.event.inputs.export_excel != 'false'
+        run: |
+          echo "📊 Generating Excel export..."
+          python -c "
+          import sys
+          sys.path.insert(0, 'src')
+          from export.excel_exporter import export_matches_to_excel
+          try:
+              path = export_matches_to_excel()
+              print(f'✅ Excel exported to: {path}')
+          except Exception as e:
+              print(f'⚠️ Excel export skipped: {e}')
+          "
+        continue-on-error: true
+      
+      - name: Generate Calendar File
+        run: |
+          echo "📅 Generating calendar file..."
+          python -c "
+          import sys
+          sys.path.insert(0, 'src')
+          from integrations.calendar import generate_deadline_calendar
+          try:
+              path = generate_deadline_calendar()
+              print(f'✅ Calendar exported to: {path}')
+          except Exception as e:
+              print(f'⚠️ Calendar export skipped: {e}')
+          "
+        continue-on-error: true
+      
+      - name: Send Email Digest
+        if: github.event.inputs.run_email_digest != 'false'
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          FROM_ADDRESS: ${{ secrets.FROM_ADDRESS || 'mpart-grants@uis.edu' }}
+          TO_ADDRESSES: ${{ secrets.TO_ADDRESSES }}
+          SEND_DAILY_DIGEST: 'true'
+        run: |
+          echo "📧 Sending email digest..."
+          python -c "
+          import sys
+          sys.path.insert(0, 'src')
+          import json
+          from notifications.email_notifier import EmailNotifier
+          
+          try:
+              with open('data/mpart_matches.json') as f:
+                  data = json.load(f)
+              
+              matches = data.get('matches', [])
+              stats = data.get('summary', {})
+              
+              notifier = EmailNotifier()
+              success = notifier.send_digest(matches, stats)
+              
+              if success:
+                  print('✅ Email digest sent successfully')
+              else:
+                  print('⚠️ Email digest failed (check SMTP configuration)')
+          except Exception as e:
+              print(f'⚠️ Email digest skipped: {e}')
+          "
         continue-on-error: true
       
       - name: Check for new matches
@@ -50,8 +129,10 @@ jobs:
         run: |
           if [ -f "data/mpart_matches.json" ]; then
             MATCH_COUNT=$(python3 -c "import json; data=json.load(open('data/mpart_matches.json')); print(len(data.get('matches', [])))" 2>/dev/null || echo "0")
-            echo "Found $MATCH_COUNT matches"
+            HIGH_PRIORITY=$(python3 -c "import json; data=json.load(open('data/mpart_matches.json')); print(len([m for m in data.get('matches', []) if m.get('match_score', 0) >= 80]))" 2>/dev/null || echo "0")
+            echo "Found $MATCH_COUNT total matches ($HIGH_PRIORITY high priority)"
             echo "match_count=$MATCH_COUNT" >> $GITHUB_OUTPUT
+            echo "high_priority=$HIGH_PRIORITY" >> $GITHUB_OUTPUT
             
             # Check if file was modified
             if git diff --quiet data/mpart_matches.json 2>/dev/null; then
@@ -63,6 +144,7 @@ jobs:
             fi
           else
             echo "match_count=0" >> $GITHUB_OUTPUT
+            echo "high_priority=0" >> $GITHUB_OUTPUT
             echo "has_changes=false" >> $GITHUB_OUTPUT
             echo "No matches file found"
           fi
@@ -76,24 +158,28 @@ jobs:
       - name: Commit and push new matches
         if: steps.check_matches.outputs.has_changes == 'true'
         run: |
-          git add data/mpart_matches.json
-          git add data/live_ingestion_results.json 2>/dev/null || true
-          git add data/gata_live_capture.json 2>/dev/null || true
+          git add data/*.json 2>/dev/null || true
+          git add data/*.xlsx 2>/dev/null || true
+          git add data/*.ics 2>/dev/null || true
           
           TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
           MATCH_COUNT=${{ steps.check_matches.outputs.match_count }}
+          HIGH_PRIORITY=${{ steps.check_matches.outputs.high_priority }}
           
-          git commit -m "🤖 Daily Scout: Found $MATCH_COUNT MPART matches on $TIMESTAMP
+          git commit -m "🤖 Daily Scout v2: $MATCH_COUNT matches ($HIGH_PRIORITY high priority) on $TIMESTAMP
 
-          - Automated grant discovery from Illinois GATA and SAM.gov
-          - Pre-filtered for Illinois Higher Education eligibility
-          - High-score matches (>80) flagged for DeepResearch
+          - Illinois GATA portal scanned
+          - SAM.gov federal opportunities queried
+          - Foundation sources checked (RWJF, Commonwealth, etc.)
+          - Excel export generated
+          - Calendar file generated
+          - Email digest sent (if configured)
           
           Workflow: ${{ github.workflow }}
-          Run: ${{ github.run_number }}"
+          Run: ${{ github.run_number }}" || echo "No changes to commit"
           
           git push
-          echo "✅ Successfully committed and pushed new matches"
+          echo "✅ Successfully committed and pushed"
       
       - name: Upload artifacts
         if: always()
@@ -102,23 +188,36 @@ jobs:
           name: scout-results-${{ github.run_number }}
           path: |
             data/*.json
-            logs/*.log
+            data/*.xlsx
+            data/*.ics
           retention-days: 30
       
       - name: Summary
         if: always()
         run: |
-          echo "## 🎯 MPART Daily Scout Results" >> $GITHUB_STEP_SUMMARY
+          echo "## 🎯 MPART Daily Scout v2 Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           if [ "${{ steps.check_matches.outputs.has_changes }}" == "true" ]; then
             echo "✅ **New matches found and committed!**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "- Matches: ${{ steps.check_matches.outputs.match_count }}" >> $GITHUB_STEP_SUMMARY
-            echo "- Timestamp: $(date -u +"%Y-%m-%d %H:%M UTC")" >> $GITHUB_STEP_SUMMARY
-            echo "- [View mpart_matches.json](./data/mpart_matches.json)" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Total Matches | ${{ steps.check_matches.outputs.match_count }} |" >> $GITHUB_STEP_SUMMARY
+            echo "| High Priority | ${{ steps.check_matches.outputs.high_priority }} |" >> $GITHUB_STEP_SUMMARY
+            echo "| Timestamp | $(date -u +"%Y-%m-%d %H:%M UTC") |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📁 Generated Files" >> $GITHUB_STEP_SUMMARY
+            echo "- [mpart_matches.json](./data/mpart_matches.json)" >> $GITHUB_STEP_SUMMARY
+            echo "- Excel export (.xlsx)" >> $GITHUB_STEP_SUMMARY
+            echo "- Calendar file (.ics)" >> $GITHUB_STEP_SUMMARY
           else
             echo "ℹ️ **No new matches today**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "The scout ran successfully but no new high-quality matches were found." >> $GITHUB_STEP_SUMMARY
           fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🚀 Quick Actions" >> $GITHUB_STEP_SUMMARY
+          echo "- Run briefing: \`python src/student_briefing_v2.py\`" >> $GITHUB_STEP_SUMMARY
+          echo "- View dashboard: \`streamlit run src/dashboard/app.py\`" >> $GITHUB_STEP_SUMMARY
