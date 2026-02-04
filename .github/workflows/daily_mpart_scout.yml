@@ -16,6 +16,10 @@ on:
         description: 'Generate Excel export'
         required: false
         default: 'true'
+      include_foundations:
+        description: 'Include foundation sources (RWJF, Commonwealth, etc.)'
+        required: false
+        default: 'false'
 
 env:
   PYTHON_VERSION: '3.11'
@@ -51,8 +55,13 @@ jobs:
           DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
         run: |
           echo "🚀 Starting MPART Grant Scout pipeline..."
-          echo "Sources: Illinois GATA, SAM.gov, Foundations"
-          python src/scout_il.py --live
+          echo "Sources: Illinois GATA, SAM.gov"
+          CMD="python src/scout_il.py --live"
+          if [ \"${{ github.event.inputs.include_foundations }}\" = \"true\" ]; then
+            CMD=\"$CMD --include-foundations\"
+            echo "Including foundation sources"
+          fi
+          $CMD
           echo "✅ Scout completed"
         continue-on-error: true
       
